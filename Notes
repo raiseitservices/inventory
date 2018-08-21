@@ -1,0 +1,381 @@
+
+  <<< TODO Items >>>
+
+Write a Sample Inventory Spring Boot Application with REST APIs
+	Define APIs
+	Persist relational data in MYSQL
+	Persist document in Mongo
+	
+Load test Spring: 
+	JMeter for cocktail of http requests 
+	Response parsing to determine test case status. 
+	
+CPU & Memory planning: 
+	Define optimal CPU & Memory required for Application   
+	
+Performance tuning: 
+	API support for E-tags and external caching support.
+	
+Caching: 
+	Improving application performance avoiding external calls
+	
+Monitoring:
+	Index and draw visualization in ELK for Application
+		Request count for each type of request, 
+		Response count based on http error codes, 
+		CPU & Memory utilization of application. 
+		Active Thread count in application
+		
+Security: 
+	Securing REST APIs with https
+	Two way security for REST APIs
+
+Messaging:
+	Kafka: Introduce async processing in application
+	
+High Availability: 
+	HA-PROXY: Load balancing requests behind a reverse-proxy 
+
+Dockerization:
+	Deploy spring boot application in Docker
+
+Database:
+	Clustering
+
+
+Tools:
+http4e - http://nextinterfaces.com/http4e/install/
+http://www.nextinterfaces.com/http4e-eclipse/eclipse-restful-http-client-plugin-install/
+	
+	
+	
+## --- GIT
+
+https://github.com/login
+raiseitservices@gmail.com / Raise2807
+
+
+
+##-------- Docker commands ---------
+# docker run -p 8080:8080 -t cparthiban/spring-boot/spring-boot-examples:latest
+# docker run -it cparthiban/spring-boot/spring-boot-examples:latest /bin/sh
+
+# Launch docker container
+# docker run --name parthi-mysql -e MYSQL_ROOT_PASSWORD=secret -d mysql:tag 
+
+# docker ps to find the container id. 
+
+## Login to docker container
+# docker exec -it <container_id> bash
+
+
+
+##-------- API CALLS ---------
+
+GET	http://localhost:8080/product/info	
+
+POST http://localhost:8080/product/
+
+GET http://localhost:8080/product/101
+
+
+
+
+
+##-------- GREENFIELD DB SETUP ---------
+# root@0ecab60dd310:/# mysql -u root -p
+# password: secret
+# mysql> use mysql
+# mysql> select version();
+
+##--- Create database & users
+# mysql -u root -p
+Enter password:
+mysql> select version();
+
+CREATE DATABASE inventory; 
+USE inventory;
+CREATE USER 'inv_db_admin'@'localhost' IDENTIFIED BY 'admin' WITH MAX_USER_CONNECTIONS 1; 
+CREATE USER 'inv_db_usr'@'localhost' IDENTIFIED BY 'usr'; 
+GRANT ALL ON inventory.* TO 'inv_db_admin'@'localhost'; 
+GRANT SELECT,INSERT,UPDATE,DELETE ON inventory.* TO 'inv_db_usr'@'localhost'; 
+FLUSH PRIVILEGES; 
+
+
+##--- Create tables for database
+# mysql -h localhost -u inv_db_admin -p inventory 
+
+CREATE TABLE IF NOT EXISTS manufacturer ( 
+	id BIGINT AUTO_INCREMENT PRIMARY KEY, 
+	name CHAR(200) NOT NULL, 
+  	addr_1 CHAR(255), addr_2 CHAR(255), 
+  	addr_state CHAR(90), 
+    addr_pin CHAR(10), 
+    addr_ctry CHAR(90), 
+    email CHAR(100), 
+    phone BIGINT, 
+    mobile BIGINT
+); 
+
+CREATE TABLE IF NOT EXISTS brand ( 
+	id BIGINT NOT NULL AUTO_INCREMENT, 
+	manufacturer_id BIGINT REFERENCES MANUFACTURER (ID), 
+    name CHAR(200) NOT NULL, 
+    code CHAR(30), 
+     PRIMARY KEY (id, manufacturer_id)
+); 
+
+CREATE TABLE IF NOT EXISTS supplier ( 
+	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	code CHAR(80), 
+    name CHAR(200) NOT NULL, 
+    type CHAR(30), 
+    addr_1 CHAR(255), addr_2 CHAR(255), 
+  	addr_state CHAR(90), 
+    addr_pin CHAR(10), 
+    addr_ctry CHAR(90), 
+    email CHAR(100), 
+    phone BIGINT, 
+    mobile BIGINT
+); 
+
+CREATE TABLE IF NOT EXISTS category ( 
+	id BIGINT AUTO_INCREMENT PRIMARY KEY, 
+	code CHAR(80) NOT NULL, 
+    name CHAR(200) NOT NULL, 
+    description CHAR(200)
+ ); 
+
+CREATE TABLE IF NOT EXISTS product ( 
+	id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+	code CHAR(80), 
+    name CHAR(200) NOT NULL, 
+    description CHAR(200) NOT NULL, 
+    category_id BIGINT REFERENCES category (id), 
+    brand_id BIGINT REFERENCES brand (id), 
+    is_active TINYINT, 
+    deleted TINYINT, 
+    warranty_terms CHAR(200)
+ ); 
+ 
+-------- END OF GREENFIELD DB SETUP ---------
+ 
+ 
+ -------- CLEAN UP as root ---------
+# mysql -u root -p
+Enter password:
+
+USE inventory
+DROP TABLE manufacturer; 
+DROP TABLE brand;
+DROP TABLE supplier;
+DROP TABLE category;
+DROP TABLE product; 
+DROP USER 'inv_db_usr'@'localhost';
+DROP USER 'inv_db_admin'@'localhost';
+
+# CLEANUP from root
+DROP DATABASE inventory; 
+
+-------- END OF CLEAN UP ---------
+ 
+ << Additional details >> 
+ 
+Product
+    group_id
+    generic_id
+    model_id/part_id
+    product_price (current rate)
+    has_instances(y/n)
+    has_lots (y/n)
+    has_attributes
+    default_uom
+    pack_size
+    average_cost
+    single_unit_product_code (for packs)
+    dimension_group (pointing to dimensions)
+    lot_information
+    
+-------------
+
+Inventory Managment System With Point of Sale ( Work Online / Offline Both )
+	• Customized Dashboard
+	• Product Managment 
+	• Purchase Managment
+	• Sales Managment 
+	• POS ( Point of Sale)
+	• Quatations and Leads Managment 
+	• Staff Managment
+	• Customer Managment
+	• Reports 
+	• Barcode Scanners/Readers
+	• For barcode and label printing:
+	• Multiple WareHouses
+	• Invoice Management
+	• Reports for Profit
+	• Multiple Language support
+	• Best for Cloth managment System
+	• Tax Managment System
+	• Stock count
+	• Expences Managment 
+	• Manage Sales from Diffrent Websites ( Amazon , Flipkart, Paytm ) 
+	Manage Customers ( Walkin, Web user, Portals )
+
+
+Inventory Data Model
+
+This is a model which supports many aspects,
+    Supports Sites, Locations and Warehouses etc.
+    Supports Categorization and Grouping
+    Support Generic Product (Ex. "Table Clock" and specific product "Citizen C123 Multi Alarm Clock" )
+    Also support Brand Variants (by various manufacturers)
+    Has CSM (color / size / model support) Ex. Bata Sandles (Color 45 Inch Blue color)
+    Product Instances with serials (such as TVs , Refrigerators etc.)
+    Lot control / Batch control with serial numbers.
+    Pack Size / UOM and UOM Conversion
+    Manufacturer and Brands as well as Suppliers
+    Also included example transaction table (Purchase order)
+    There are many other transaction types such as Issues, Transfers, Adjustments etc.
+
+Hope this would help. Please let me know if you need further information on each table.
+Cheers...!!!
+
+Wajira Weerasinghe.
+Sites
+    id
+    site_code
+    Site_name
+
+Warehouse
+    id
+    site_id
+    warehouse_code
+    warehouse_name
+
+Item Category
+    id
+    category_code
+    category_name
+
+Item Group
+    id
+    group_code
+    group_name
+
+Generic Product
+    id
+    generic_name
+
+Product
+    id
+    product_code
+    category_id
+    group_id
+    brand_id
+    generic_id
+    model_id/part_id
+    product_name
+    product_description
+    product_price (current rate)
+    has_instances(y/n)
+    has_lots (y/n)
+    has_attributes
+    default_uom
+    pack_size
+    average_cost
+    single_unit_product_code (for packs)
+    dimension_group (pointing to dimensions)
+    lot_information
+    warranty_terms (general not specific)
+    is_active
+    deleted
+
+product attribute type (color/size etc.)
+    id
+    attribute_name
+
+product_attribute
+    id
+    product_id
+    attribute_id
+
+product attribute value (this product -> red)
+    id
+    product_attribute_id
+    value
+
+product_instance
+    id
+    product_id
+    instance_name (as given by manufacturer)
+    serial_number
+    brand_id (is this brand)
+    stock_id (stock record pointing qih, location etc.)
+    lot_information (lot_id)
+    warranty_terms
+    product attribute value id (if applicable)
+
+product lot
+    id
+    lot_code/batch_code
+    date_manufactured
+    date_expiry
+    product attribute value id (if applicable)
+
+Brand
+    id
+    manufacturer_id
+    brand_code
+    brand_name
+
+Brand Manufacturer
+    id
+    manufacturer_name
+
+Stock
+    id
+    product_id
+    warehouse_id, zone_id, level_id, rack_id etc.
+    quantity in hand
+    product attribute value id (if applicable) [we have 4 red color items etc.]
+
+Product Price Records
+    product_id
+    from_date
+    product_price
+
+Purchase Order Header
+    id
+    supplier_id
+    purchase_date
+    total_amount
+
+Purchase Order Line
+    id
+    po_id
+    product_id
+    unit_price
+    quantity
+
+Supplier
+    id
+    supplier_code
+    supplier_name
+    supplier_type
+
+product_uom
+    id
+    uom_name
+
+product_uom_conversion
+    id
+    from_uom_id
+    to_uom_id
+    conversion_rule
+
+Inventory can get quite complex to model. First you need to understand that you need to be able to tell the value of the inventory onhand based on what you paid for it. This means you cannot rely on a product table that is updated to the current price. While you might want such a table to help you figure out what to sell it for, there are tax reasons why you need to know the actual vlaue you paid for each item in the warehouse. 
+So first you need the product table (you might want to make sure you have an updated date column in this, it can be handy to know if your prices seem out of date).
+Then you need a table that stores the actual warehouse location of each part and the price at purchase. If the items are large enough, you need a way to individually mark each item, so that you know what was taken out. Usually people use barcodes for that. This table needs to be updated to record that the part is no longer there when you sell it. I prefer to make the record inactive and have a link to my sales data to that record, so I know exactly what I paid for and what I sold each part for. 
+Sales should have at least two tables. One for the general information about the sale, the customername (there should also be a customer table most of the time to get this data from), the date, where it was shipped to etc.
+Then a sales detail table that includes a record for each line item in the order. Include all the data you need about the part, color, size, quantity, price. This is not denormalizing, this is storing historical data. The one thing you do not want to do is rely on the prices in the product table for anything except the inital entry to this table. You do not want to do a sales report and have the numbers come out wrong becasue the product prices changed the day before. 
+Do not design an inventory database without consulting with an accountant or specialist in taxes. You also should do some reading on internal controls. It is easy to steal from a company undetected that has not done their work on internal controls in the database. 
