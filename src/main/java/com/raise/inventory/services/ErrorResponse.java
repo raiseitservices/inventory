@@ -7,10 +7,14 @@ public class ErrorResponse {
 	private String message;
 	private StackTraceElement[] details;
 
-	public ErrorResponse(String message, StackTraceElement[] details) {
+	public ErrorResponse(String message) {
 		super();
 		this.timestamp = new Date();
 		this.message = message;
+	}
+	
+	public ErrorResponse(String message, StackTraceElement[] details) {
+		this(message);
 		this.details = details;
 	}
 

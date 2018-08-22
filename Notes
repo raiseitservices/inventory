@@ -75,6 +75,12 @@ raiseitservices@gmail.com / Raise2807
 GET	http://localhost:8080/product/info	
 
 POST http://localhost:8080/product/
+{
+    "name": "Prod Name",
+    "type": "ProdType",
+    "id": 102
+}
+
 
 GET http://localhost:8080/product/101
 
